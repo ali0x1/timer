@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import time
+import argparse
+
+# Convert the input time string to seconds
+def str_to_seconds(time_str):
+    if len(time_str) != 8:
+            raise argparse.ArgumentTypeError("invalid time format: use 'hh:mm:ss'")
+    try:
+        h, m, s = map(int, time_str.split(":"))
+        if h < 0 or m < 0 or s < 0 or m > 59 or s > 59:
+            raise argparse.ArgumentTypeError("invalid time format: use 'hh:mm:ss'")     
+        return h * 3600 + m * 60 + s
+    except ValueError:
+        raise argparse.ArgumentTypeError("invalid time format: use 'hh:mm:ss'")
+
+# Convert seconds back to the time format
+def seconds_to_hms(seconds):
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = (seconds % 3600) % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
+
+def countdown(seconds):
+    while seconds:
+        timer = seconds_to_hms(seconds)
+        print(timer, end="\r")
+        time.sleep(1)
+        seconds -= 1
+    
+    print("Time's up")
+
+if __name__ == "__main__":
+    # Set up the argument parser and parse the command-line arguments
+    parser = argparse.ArgumentParser(description="CLI Timer Script")
+    parser.add_argument("time", type=str_to_seconds, help="time should be in the 'hh:mm:ss' format")
+    args = parser.parse_args()
+    
+    # Start timer
+    countdown(args.time)
